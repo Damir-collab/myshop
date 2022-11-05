@@ -1,8 +1,12 @@
 from flask import redirect, render_template, url_for, flash, request
 from shop import db, app
 from .models import Brand, Category
+from .forms import Addproducts
+import secrets
 
-
+@app.route('/')
+def home():
+    return "  "
 @app.route('/addbrand', methods=['GET', 'POST'])
 def addbrand():
     if request.method == "POST":
@@ -29,3 +33,9 @@ def addcategory():
         return redirect(url_for('addcategory'))
 
     return render_template('products/addbrand.html')
+
+@app.route('/addproduct', methods=['GET', 'POST'])
+def addproduct():
+    form = Addproducts(request.form)
+
+    return render_template('products/addproduct.html', title="Add product page", form=form)
