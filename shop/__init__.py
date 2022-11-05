@@ -1,8 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///myshop.db'
-db = SQLAlchemy(app)
+app.config['SECRET_KEY']= 'dsfgsfad11321ef'
 
-from shop.admin import routes,forms
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+from shop.admin import routes
