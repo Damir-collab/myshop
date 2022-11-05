@@ -9,3 +9,4 @@ app.config['SECRET_KEY']= 'dsfgsfad11321ef'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 from shop.admin import routes
+from shop.product import routes
