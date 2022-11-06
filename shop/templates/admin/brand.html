@@ -1,12 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-
     {% include '_messages.html' %}
-
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Admin</a>
+          <a class="navbar-brand" href="/admin">Admin</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -14,7 +12,8 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/admin">Home <span class="sr-only">(current)</span></a>
+              </li>
               <li class="nav-item">
                 <a class="nav-link" href="/brands">Brands</a>
               </li>
@@ -28,48 +27,41 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="#">Action</a>
                   <a class="dropdown-item" href="#">Another action</a>
-                  <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#">Something else here</a>
                 </div>
               </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-              </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
           </div>
         </nav>
     </div>
     <div class="container mt-5">
-        <table class="table table-sm table-striped">
+        <table class="table table-sm table-striped table-hover">
             <thead>
                 <th>Sr</th>
                 <th>Name</th>
-                <th>Image</th>
-                <th>Price</th>
-                <th>Discount</th>
-                <th>Brand</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </thead>
             <tbody>
-                {% for product in products %}
-                    <tr>
-                        <td>{{loop.index}}</td>
-                        <td>{{ product.name }}</td>
-                        <td>
-                            <img src="{{url_for('static',filename='images/' + product.image_1)}}" alt="{{product.name}}" width="50" height="50">
-                        </td>
-                        <td>{{ product.price }}</td>
-                        <td>{{ product.discount }}%</td>
-                        <td>{{ product.brand.name}}</td>
-                        <td>Edit</td>
-                        <td>Delete</td>
-                    </tr>
-                {% endfor %}
+                {% if brands %}
+                    {% for brand in brands %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ brand.name }}</td>
+                            <td><a href="" class="btn btn-outline-info btn-sm">Edit</a></td>
+                            <td><a href="" class="btn btn-outline-danger btn-sm">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for category in categories %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ category.name }}</td>
+                            <td><a href="" class="btn btn-outline-info btn-sm">Edit</a></td>
+                            <td><a href="" class="btn btn-outline-danger btn-sm">Delete</a></td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>
