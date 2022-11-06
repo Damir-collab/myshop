@@ -1,4 +1,4 @@
-from flask import redirect, render_template, url_for, flash, request
+from flask import redirect, render_template, url_for, flash, request, sessions
 from shop import db, app, photos
 from .models import Brand, Category, Addproduct
 from .forms import Addproducts
@@ -9,6 +9,9 @@ def home():
     return "  "
 @app.route('/addbrand', methods=['GET', 'POST'])
 def addbrand():
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
     if request.method == "POST":
         getbrand = request.form.get('brand')
         brand = Brand(name=getbrand)
@@ -23,19 +26,26 @@ def addbrand():
 
 @app.route('/addcategory', methods=['GET', 'POST'])
 def addcategory():
-    if request.method == "POST":
-        getcategory = request.form.get('category')
-        category = Category(name=getcategory)
-        db.session.add(category)
-        flash(f'The category {getcategory} was added to your database', 'success')
-        db.session.commit()
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+        if request.method == "POST":
+            getcategory = request.form.get('category')
+            category = Category(name=getcategory)
+            db.session.add(category)
+            flash(f'The category {getcategory} was added to your database', 'success')
+            db.session.commit()
 
-        return redirect(url_for('addcategory'))
+            return redirect(url_for('addcategory'))
 
     return render_template('products/addbrand.html')
 
 @app.route('/addproduct', methods=['GET', 'POST'])
 def addproduct():
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+
     brands = Brand.query.all()
     categories = Category.query.all()
     form = Addproducts(request.form)
