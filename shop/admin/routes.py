@@ -26,8 +26,8 @@ def brands():
 
     return render_template('admin/brand.html', title="Brand page", brands=brands)
 
-@app.route('/category')
-def category():
+@app.route('/categories')
+def categories():
     if 'email' not in session:
         flash(f'Please login first!', 'danger')
         return redirect(url_for('login'))
