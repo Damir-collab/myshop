@@ -1,4 +1,4 @@
-from flask import redirect, render_template, url_for, flash, request, session
+from flask import redirect, render_template, url_for, flash, request, session, current_app
 from shop import db, app, photos
 from .models import Brand, Category, Addproduct
 from .forms import Addproducts
@@ -41,6 +41,23 @@ def updatebrand(id):
 
     return render_template('products/updatebrand.html', title='Update brand', updatebrand=updatebrand)
 
+@app.route('/addcategory', methods=['GET', 'POST'])
+def addcategory():
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+        if request.method == "POST":
+            getcategory = request.form.get('category')
+            category = Category(name=getcategory)
+            db.session.add(category)
+            flash(f'The category {getcategory} was added to your database', 'success')
+            db.session.commit()
+
+            return redirect(url_for('addcategory'))
+
+    return render_template('products/addbrand.html')
+
+
 @app.route('/updatecategory/<int:id>', methods=['GET', 'POST'])
 def updatecategory(id):
     if 'email' not in session:
@@ -58,22 +75,6 @@ def updatecategory(id):
 
     return render_template('products/updatebrand.html', title='Update category', updatecategory=updatecategory)
 
-
-@app.route('/addcategory', methods=['GET', 'POST'])
-def addcategory():
-    if 'email' not in session:
-        flash(f'Please login first!', 'danger')
-        return redirect(url_for('login'))
-        if request.method == "POST":
-            getcategory = request.form.get('category')
-            category = Category(name=getcategory)
-            db.session.add(category)
-            flash(f'The category {getcategory} was added to your database', 'success')
-            db.session.commit()
-
-            return redirect(url_for('addcategory'))
-
-    return render_template('products/addbrand.html')
 
 @app.route('/addproduct', methods=['GET', 'POST'])
 def addproduct():
@@ -109,3 +110,38 @@ def addproduct():
         return redirect(url_for('admin'))
 
     return render_template('products/addproduct.html', form=form, title="Add product page", brands=brands, categories=categories)
+
+@app.route('/updateproduct/<int:id>', methods=['GET', 'POST'])
+def updateproduct(id):
+    brands = Brand.query.all()
+    categories = Category.query.all()
+    product = Addproduct.query.get_or_404(id)
+    form = Addproducts(request.form)
+
+    brand = request.form.get('brand')
+    category = request.form.get('category')
+
+    if request.method == "POST":
+        product.name = form.name.data
+        product.price = form.price.data
+        product.discount = form.discount.data
+        product.stock = form.stock.data
+        product.color = form.color.data
+        product.description = form.description.data
+        product.brand_id = request.form.get('brand')
+        product.category_id = request.form.get('category')
+
+        flash('The product was updated', 'success')
+        db.session.commit()
+
+        return redirect(url_for('admin'))
+
+    form.name.data = product.name
+    form.price.data = product.price
+    form.discount.data = product.discount
+    form.stock.data = product.stock
+    form.color.data = product.color
+    form.description.data = product.description
+
+    return render_template('products/updateproduct.html', form=form, title='Update Product', product=product,
+                           brands=brands, categories=categories)

@@ -49,7 +49,6 @@ def register():
                     password=hash_password)
         db.session.add(user)
         db.session.commit()
-        #db.session.commit()
         return redirect(url_for('login'))
     return render_template('admin/register.html', form=form, title="Registration page")
 
@@ -60,7 +59,7 @@ def login():
         user = User.query .filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             session['email']= form.email.data
-            flash(f'Добро пожаловать сюда {form.email.data}', 'success')
+            flash(f'Добро пожаловать  {form.email.data}', 'success')
             return redirect(request.args.get('next') or url_for('admin'))
         else:
             flash('Неправильный пароль', 'danger')
