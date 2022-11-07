@@ -100,10 +100,10 @@ def addproduct():
         image_2= photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
         image_3= photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
 
-        addpro = Addproduct(name=name, price=price, discount=discount, stock=stock, color=color,
+        addproduct = Addproduct(name=name, price=price, discount=discount, stock=stock, color=color,
                             description=description, category_id=category, brand_id=brand,
                             image_1=image_1, image_2=image_2, image_3=image_3)
-        db.session.add(addpro)
+        db.session.add(addproduct)
         flash(f'The product {name} has been added to your database', 'success')
         db.session.commit()
 
@@ -130,6 +130,24 @@ def updateproduct(id):
         product.description = form.description.data
         product.brand_id = request.form.get('brand')
         product.category_id = request.form.get('category')
+        if request.files.get('image_1'):
+            try:
+                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
+                product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
+            except:
+                product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
+        if request.files.get('image_2'):
+            try:
+                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
+                product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
+            except:
+                product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
+        if request.files.get('image_3'):
+            try:
+                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
+                product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
+            except:
+                product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
 
         flash('The product was updated', 'success')
         db.session.commit()
