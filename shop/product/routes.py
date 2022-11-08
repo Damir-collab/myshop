@@ -2,8 +2,8 @@ from flask import redirect, render_template, url_for, flash, request, session, c
 from shop import db, app, photos
 from .models import Brand, Category, Addproduct
 from .forms import Addproducts
-import secrets
-import os
+import secrets,os
+
 
 @app.route('/')
 def home():
@@ -41,6 +41,24 @@ def updatebrand(id):
 
     return render_template('products/updatebrand.html', title='Update brand', updatebrand=updatebrand)
 
+
+@app.route('/deletebrand/<int:id>', methods=['POST'])
+def deletebrand(id):
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+
+    brand = Brand.query.get_or_404(id)
+    if request.method == "POST":
+        try:
+            db.session.delete( brand)
+            db.session.commit()
+            flash(f'The brand {brand.name} was deleted', 'success')
+            return redirect(url_for('brands'))
+        except:
+            flash(f'The brand {brand.name} can not be deleted', 'warning')
+            return redirect(url_for('brands'))
+
 @app.route('/addcategory', methods=['GET', 'POST'])
 def addcategory():
     if 'email' not in session:
@@ -75,6 +93,24 @@ def updatecategory(id):
 
     return render_template('products/updatebrand.html', title='Update category', updatecategory=updatecategory)
 
+
+@app.route('/deletecategory/<int:id>', methods=['POST'])
+def deletecategory(id):
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+
+    category = Category.query.get_or_404(id)
+
+    if request.method == "POST":
+        try:
+            db.session.delete(category)
+            db.session.commit()
+            flash(f'The brand {category.name} was deleted', 'success')
+            return redirect(url_for('categories'))
+        except:
+            flash(f'The brand {category.name} can not be deleted', 'warning')
+            return redirect(url_for('categories'))
 
 @app.route('/addproduct', methods=['GET', 'POST'])
 def addproduct():
@@ -163,3 +199,27 @@ def updateproduct(id):
 
     return render_template('products/updateproduct.html', form=form, title='Update Product', product=product,
                            brands=brands, categories=categories)
+
+@app.route('/deleteproduct/<int:id>', methods=['POST'])
+def deleteproduct(id):
+    if 'email' not in session:
+        flash(f'Please login first!', 'danger')
+        return redirect(url_for('login'))
+
+    product = Addproduct.query.get_or_404(id)
+    if request.method == "POST":
+        try:
+            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
+            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
+            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
+
+            db.session.delete(product)
+            db.session.commit()
+
+            flash(f'The product {product.name} was delete from your record', 'success')
+            return redirect(url_for('admin'))
+        except Exception as e:
+            print(e)
+
+            flash(f'Can not delete the product', 'warning')
+            return redirect(url_for('admin'))

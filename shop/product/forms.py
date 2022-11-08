@@ -4,7 +4,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 class Addproducts(Form):
     name = StringField('Name', [validators.DataRequired()])
-    price = DecimalField('Price', [validators.DataRequired()])
+    price = FloatField('Price', [validators.DataRequired()])
     discount = IntegerField('Discount', default=0)
     stock = IntegerField('Stock', [validators.DataRequired()])
     color = StringField('Color', [validators.DataRequired()])
