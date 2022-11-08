@@ -7,7 +7,9 @@ import secrets,os
 
 @app.route('/')
 def home():
-    return "  "
+    products = Addproduct.query.filter(Addproduct.stock > 0)
+
+    return render_template('products/index.html', title="Home page", products=products)
 @app.route('/addbrand', methods=['GET', 'POST'])
 def addbrand():
     if 'email' not in session:

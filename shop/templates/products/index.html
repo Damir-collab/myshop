@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/brands">Brands</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories">Categories</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-3 mt-3">
+                    <div class="card">
+                        <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{product.name}}" class="card-img-top" height="200">
+                        <div class="card-body">
+                            {% if product.discount > 0 %}
+                                <h5 style="text-shadow: 4px 4px 4px black; color: #b8daff; transform: rotate(-15deg);
+                                                                            position: absolute; top: 10%; left: 50%">
+                                    Скидка {{product.discount}} %
+                                </h5>
+                            {% endif %}
+                            <h5 class="text-center">{{product.name}}</h5>
+                            <p class="text-center">Цена {{product.price}} р</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="float-left btn btn-sm btn-primary">Подробнее</a>
+                            <a href="#" class="float-right btn btn-sm btn-warning">В корзину</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}
