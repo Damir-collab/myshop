@@ -12,12 +12,20 @@ from .models import Brand, Category, Addproduct
 def home():
     page = request.args.get('page', 1, type=int)
     products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()). \
-        paginate(page=page, per_page=8)
+        paginate(page=page, per_page=3)
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
 
     return render_template('products/index.html', title="Home page", products=products, brands=brands, categories=categories, get_category=get_category)
 
+@app.route('/product/<int:id>')
+def single_page(id):
+    product = Addproduct.query.get_or_404(id)
+    brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
+    categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
+
+    return render_template('products/single_page.html', title=product.name, product=product,
+                           brands=brands, categories=categories)
 
 @app.route('/brand/<int:id>')
 def get_brand(id):
