@@ -5,7 +5,8 @@ from shop import db
 class Addproduct(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    price = db.Column(db.Numeric(10, 2), nullable=False)
+    price = db.Column(db.Numeric(precision=2, asdecimal=False, decimal_return_scale=None))
+    # price = db.Column(db.Numeric(10, 2), nullable=False)
     discount = db.Column(db.Integer, default=0)
     stock = db.Column(db.Integer, nullable=False)
     color = db.Column(db.Text, nullable=False)

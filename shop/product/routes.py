@@ -10,29 +10,35 @@ from .models import Brand, Category, Addproduct
 
 @app.route('/')
 def home():
-    products = Addproduct.query.filter(Addproduct.stock > 0)
+    page = request.args.get('page', 1, type=int)
+    products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()). \
+        paginate(page=page, per_page=8)
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
 
-    return render_template('products/index.html', title="Home page", products=products, brands=brands, categories=categories)
+    return render_template('products/index.html', title="Home page", products=products, brands=brands, categories=categories, get_category=get_category)
 
 
 @app.route('/brand/<int:id>')
 def get_brand(id):
-    brand = Addproduct.query.filter_by(brand_id=id)
+    page = request.args.get('page', 1, type=int)
+    get_brand = Brand.query.filter_by(id=id).first_or_404()
+    brand = Addproduct.query.filter_by(brand=get_brand).paginate(page=page, per_page=8)
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
 
-    return render_template('products/index.html', title="Home page", brand=brand, brands=brands, categories=categories)
+    return render_template('products/index.html', title="Home page", brand=brand, brands=brands, categories=categories, get_brand=get_brand)
 
 
 @app.route('/category/<int:id>')
 def get_category(id):
-    category = Addproduct.query.filter_by(category_id=id)
+    page = request.args.get('page', 1, type=int)
+    get_category = Category.query.filter_by(id=id).first_or_404()
+    category = Addproduct.query.filter_by(category=get_category).paginate(page=page, per_page=8)
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
 
-    return render_template('products/index.html', title="Home page", category=category, categories=categories, brands=brands)
+    return render_template('products/index.html', title="Home page", category=category, categories=categories, brands=brands, get_category=get_category)
 
 
 @app.route('/addproduct', methods=['GET', 'POST'])
