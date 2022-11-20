@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-
 {% block content %}
 <!--begin navbar-->
     <div class="container">
@@ -42,6 +41,11 @@
                             {% endfor %}
                         </div>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1">
+                            Корзина ({{ session['Shoppingcart']|length }})
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -70,7 +74,19 @@
                                    class="float-left btn btn-sm btn-primary">
                                     Подробнее
                                 </a>
-                                <a href="#" class="float-right btn btn-sm btn-warning">В корзину</a>
+
+                                <form action="{{url_for('AddCart')}}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{item.id}}">
+                                    <button type="submit" class="btn btn-sm btn-warning float-right">Добавить</button>
+                                    <input type="hidden" name="quantity" id="" value="1" min="1" max="{{item.stock}}">
+                                    {% set colors = item.color.split(',') %}
+                                    <select name="colors" id="colors" style="visibility: hidden;">
+                                        {% for color in colors %}
+                                            {% set col = color.split(':') %}
+                                            <option value="{{col[0]}}">{{col[0]|capitalize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -83,7 +99,7 @@
                         <-
                     </a>
                 {% endif %}
-                {% if brand.total>4 %}
+                {% if brand.total>8 %}
                     {% for page_num in brand.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
                         {% if page_num %}
                             {% if brand.page == page_num %}
@@ -129,7 +145,19 @@
                                    class="float-left btn btn-sm btn-primary">
                                     Подробнее
                                 </a>
-                                <a href="#" class="float-right btn btn-sm btn-warning">В корзину</a>
+
+                                <form action="{{url_for('AddCart')}}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{item.id}}">
+                                    <button type="submit" class="btn btn-sm btn-warning float-right">Добавить</button>
+                                    <input type="hidden" name="quantity" id="" value="1" min="1" max="{{item.stock}}">
+                                    {% set colors = item.color.split(',') %}
+                                    <select name="colors" id="colors" style="visibility: hidden;">
+                                        {% for color in colors %}
+                                            {% set col = color.split(':') %}
+                                            <option value="{{col[0]}}">{{col[0]|capitalize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -142,7 +170,7 @@
                         <-
                     </a>
                 {% endif %}
-                {% if category.total>4 %}
+                {% if category.total>8 %}
                     {% for page_num in category.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
                         {% if page_num %}
                             {% if category.page == page_num %}
@@ -187,8 +215,21 @@
                                 <a href="{{url_for('single_page', id=product.id)}}"
                                    class="float-left btn btn-sm btn-primary">
                                     Подробнее
+
                                 </a>
-                                <a href="#" class="float-right btn btn-sm btn-warning">В корзину</a>
+
+                                <form action="{{url_for('AddCart')}}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{product.id}}">
+                                    <button type="submit" class="btn btn-sm btn-warning float-right">Добавить</button>
+                                    <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                                    {% set colors = product.color.split(',') %}
+                                    <select name="colors" id="colors" style="visibility: hidden;">
+                                        {% for color in colors %}
+                                            {% set col = color.split(':') %}
+                                            <option value="{{col[0]}}">{{col[0]|capitalize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -201,7 +242,7 @@
                         <-
                     </a>
                 {% endif %}
-                    {% if products.total>4 %}
+                    {% if products.total>8 %}
                     {% for page_num in products.iter_pages(left_edge=1, right_edge=2, left_current=1, right_current=2) %}
                         {% if page_num %}
                             {% if products.page == page_num %}
