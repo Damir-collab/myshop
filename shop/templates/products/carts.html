@@ -60,11 +60,16 @@
                 </tbody>
             </table>
            <table class="table table-sm">
-                <tr>
+                <td>
                     <td><a href="/" class="btn btn-sm btn-warning">Продолжить покупки</a></td>
-                    <td width="30%"></td>
+                    <td width="40%"></td>
                     <td>Налог: {{tax}} руб.</td>
                     <td>Всего: {{grand_total}} руб.</td>
+                    <td>
+                         <a href="{{url_for('clear_cart')}}" class="btn btn-sm btn-danger float-right mr-3">
+                            Очистить корзину
+                        </a>
+                    </td>
                 </tr>
             </table>
         </div>
