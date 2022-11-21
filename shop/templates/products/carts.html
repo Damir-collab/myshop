@@ -54,16 +54,18 @@
                             <td>{{ "%0.2f"|format((subtotal|float) - discount|float) }}</td>
                             <td><button type="submit" class="btn btn-sm btn-info">Изменить</button></td>
                         </form>
-                        <td><a href="#">Удалить</a></td>
+                        <td><a href="{{url_for('delete_item', id=key)}}" class="btn btn-sm btn-danger">Удалить</a></td>
                     </tr>
                 {% endfor %}
-                    <tr>
-                        <td></td>
-                        <td><a href="/" class="btn btn-sm btn-warning">Продолжить покупки</a></td>
-                        <td colspan="3">Налог: {{tax}} руб.</td>
-                        <td colspan="4">Всего: {{grand_total}} руб.</td>
-                    </tr>
                 </tbody>
+            </table>
+           <table class="table table-sm">
+                <tr>
+                    <td><a href="/" class="btn btn-sm btn-warning">Продолжить покупки</a></td>
+                    <td width="30%"></td>
+                    <td>Налог: {{tax}} руб.</td>
+                    <td>Всего: {{grand_total}} руб.</td>
+                </tr>
             </table>
         </div>
     </div>
