@@ -61,3 +61,32 @@ def get_cart():
         grand_total = float("%.2f" % (1.06 * subtotal))
 
     return render_template('products/carts.html', tax=tax, grand_total=grand_total)
+
+@app.route('/updatecart/<int:code>', methods=['POST'])
+def update_cart(code):
+    if 'Shoppingcart' not in session and len(session['Shoppingcart']) <= 0:
+        return redirect(url_for('home'))
+    if request.method == "POST":
+        quantity = request.form.get('quantity')
+        color = request.form.get('color')
+        try:
+            pass
+            session.modified = True
+            for key, item in session['Shoppingcart'].items():
+                if int(key) == code:
+                    item['quantity'] = quantity
+                    item['color'] = color
+                    flash('Изменения сохранены', 'success')
+                    return redirect(url_for('get_cart'))
+        except Exception as e:
+            print(e)
+            return redirect(url_for('get_cart'))
+
+
+@app.route('/empty')
+def empty_cart():
+    try:
+        session.clear()
+        return redirect(url_for('home'))
+    except Exception as e:
+        print(e)
