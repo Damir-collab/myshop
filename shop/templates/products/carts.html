@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <table class="table table-sm">
+            <thead>
+                <th>№</th>
+                <th>Название</th>
+                <th>Цвет</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Скидка</th>
+                <th>Итого</th>
+                <th>Изменить</th>
+                <th>Удалить</th>
+            </thead>
+            <tbody>
+            {% for key, product in session['Shoppingcart'].items() %}
+            {% set discount = "%0.2f"|format((product.discount/100) * product.price|float) %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.color}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.quantity}}</td>
+                    {% if product.discount > 0 %}
+                    <td>{{product.discount}}% &nbsp; {{discount}}</td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    {% set subtotal = product.quantity|int * product.price|float %}
+                    <td>{{ "%0.2f"|format((subtotal|float) - discount|float) }}</td>
+                    <td><a href="#">Изменить</a></td>
+                    <td><a href="#">Удалить</a></td>
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td></td>
+                    <td><a href="/" class="btn btn-sm btn-warning">Продолжить покупки</a></td>
+                    <td colspan="3">Налог: {{tax}} руб.</td>
+                    <td colspan="4">Всего: {{grand_total}} руб.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
