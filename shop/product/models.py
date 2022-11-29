@@ -3,6 +3,7 @@ from shop import db
 
 
 class Addproduct(db.Model):
+    __seachable__ = ['name', 'description']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     price = db.Column(db.Numeric(precision=2, asdecimal=False, decimal_return_scale=None))
