@@ -7,6 +7,7 @@ from shop import db, app, photos, search
 from .forms import Addproducts
 from .models import Brand, Category, Addproduct
 
+
 def brands():
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     return brands
