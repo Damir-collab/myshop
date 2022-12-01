@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_uploads import IMAGES, UploadSet, configure_uploads, patch_request_class
 from flask_msearch import Search
 from flask_login import LoginManager
+from flask_migrate import  Migrate
 import os, secrets
 
 
@@ -27,7 +28,15 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "customerLogin"
 login_manager.needs_refresh_message_category = "danger"
-login_manager.login_message = "Dойдите в профиль"
+login_manager.login_message = "Войдите в профиль"
+
+
+migrate = Migrate(app, db)
+with app.app_context():
+    if db.engine.url.drivername == "sqlite":
+        migrate.init_app(app, db, render_as_batch=True)
+    else:
+        migrate.init_app(app, db)
 
 from shop.carts import carts
 from shop.admin import routes
