@@ -22,31 +22,32 @@ class Register(db.Model, UserMixin):
     profile = db.Column(db.String(200), unique=False, default='profile.jpg')
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    class JsonEcodedDict(db.TypeDecorator):
-        impl = db.Text
 
-        def process_bind_param(self, value, dialect):
-            if value is None:
-                return '{}'
-            else:
-                return json.dumps(value)
+class JsonEcodedDict(db.TypeDecorator):
+    impl = db.Text
 
-        def process_result_value(self, value, dialect):
-            if value is None:
-                return {}
-            else:
-                return json.loads(value)
+    def process_bind_param(self, value, dialect):
+        if value is None:
+             return '{}'
+        else:
+               return json.dumps(value)
 
-    class CustomerOrder(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        invoice = db.Column(db.String(20), unique=True, nullable=False)
-        status = db.Column(db.String(20), default='В ожидании', nullable=False)
-        customer_id = db.Column(db.Integer, unique=False, nullable=False)
-        date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-        orders = db.Column(JsonEcodedDict)
+    def process_result_value(self, value, dialect):
+        if value is None:
+             return {}
+        else:
+             return json.loads(value)
 
-        def __repr__(self):
-            return '<CustomerOrder %r>' % self.invoice
+class CustomerOrder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invoice = db.Column(db.String(20), unique=True, nullable=False)
+    status = db.Column(db.String(20), default='В ожидании', nullable=False)
+    customer_id = db.Column(db.Integer, unique=False, nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    orders = db.Column(JsonEcodedDict)
+
+    def __repr__(self):
+        return '<CustomerOrder %r>' % self.invoice
 
     def __repr__(self):
         return '<Register %r>' % self.name

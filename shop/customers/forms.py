@@ -1,7 +1,7 @@
 from wtforms import Form, SubmitField, IntegerField, FloatField, StringField, PasswordField, TextAreaField, validators,ValidationError
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from shop.customers.model import Register
-from flask_wtf import FlaskForm, From
+from flask_wtf import FlaskForm, Form
 from shop.admin.models import User
 
 
