@@ -1,8 +1,8 @@
 from flask import render_template, session, request, redirect, url_for, flash
 
 from shop import app, db, bcrypt
-from .forms import RegistrationForm, LoginForm
-from .models import User
+from shop.admin.forms import RegistrationForm, LoginForm
+from shop.admin.models import User
 from shop.product.models import Addproduct, Brand, Category
 import os
 
