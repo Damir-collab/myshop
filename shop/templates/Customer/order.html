@@ -47,7 +47,11 @@
                     <td><a href="#" class="btn btn-sm btn-warning">Оплатить</a></td>
                     <td>Налог: {{tax}} руб.</td>
                     <td>Всего: {{grand_total}} руб.</td>
-                    <td><a href="#" class="btn btn-sm btn-danger float-right mr-3">Распечатать</a></td>
+                    <td>
+                        <form action="{{url_for('get_pdf', invoice=orders.invoice)}}" method="post">
+                            <button type="submit" class="btn btn-sm btn-info">Сохранить в PDF</button>
+                        </form>
+                    </td>
                 </tr>
             </table>
         </div>

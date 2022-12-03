@@ -84,3 +84,30 @@ def orders(invoice):
     return render_template('customer/order.html', invoice=invoice, tax=tax, subtotal=subtotal, grand_total=grand_total,
                            customer=customer, orders=orders)
 
+@app.route('/get_pdf/<invoice>', methods=['POST'])
+@login_required
+def get_pdf(invoice):
+    if current_user.is_authenticated:
+        grand_total = 0
+        subtotal = 0
+        customer_id = current_user.id
+        if request.method == "POST":
+            customer = Register.query.filter_by(id=customer_id).first()
+            orders = CustomerOrder.query.filter_by(customer_id=customer_id,
+                                                   invoice=invoice).order_by(CustomerOrder.id.desc()).first()
+            for _key, product in orders.orders.items():
+                discount = (product['discount']/100) * float(product['price'])
+                subtotal += float(product['price']) * int(product['quantity'])
+                subtotal -= discount
+                tax = ("%.2f" % (.06 * float(subtotal)))
+                grand_total = float("%.2f" % (1.06 * subtotal))
+
+            rendered = render_template('customer/pdf.html', invoice=invoice, tax=tax, grand_total=grand_total,
+                                       customer=customer, orders=orders)
+            pdf = pdfkit.from_string(rendered, False)
+            response = make_response(pdf)
+            response.headers['content-Type'] = 'application/pdf'
+            response.headers['content-Disposition'] = 'atteched; filename=' + invoice + '.pdf'
+            return response
+    return request(url_for('orders'))
+

@@ -38,7 +38,8 @@ def result():
 def single_page(id):
     product = Addproduct.query.get_or_404(id)
     return render_template('products/single_page.html', title=product.name, product=product,
-                           brands=brands, categories=categories)
+                           brands=brands, categories=categories())
+
 
 @app.route('/brand/<int:id>')
 def get_brand(id):
