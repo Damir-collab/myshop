@@ -44,7 +44,24 @@
             </table>
             <table class="table table-sm">
                 <tr>
-                    <td><a href="#" class="btn btn-sm btn-warning">Оплатить</a></td>
+                    <td>
+                    {% if orders.status =='Оплачено' %}
+                    {% else %}
+                        <form action="{{url_for('payment')}}" method="POST">
+                            {% set amount =  grand_total.replace('.','') %}
+                            <input type="hidden" name="amount" value="{{amount}}">
+                            <input type="hidden" name="invoice" value="{{orders.invoice}}">
+                            <script src="https://checkout.stripe.com/checkout.js"
+                                class="stripe-button"
+                                data-key="pk_test_51Lve88Jmd0r3Xv99ufojf0bxq0P3NLyX5TgyHO1lpQSkWAaTFoiqnqVyMxpHzS49pVOvkTyTaVozTqg9CzY34iH400QDouRKF6"
+                                data-name="{{customer.name}}"
+                                data-description="My electronics"
+                                data-amount="{{amount}}"
+                                data-currency="usd">
+                            </script>
+                        </form>
+                    {% endif %}
+                    </td>
                     <td>Налог: {{tax}} руб.</td>
                     <td>Всего: {{grand_total}} руб.</td>
                     <td>

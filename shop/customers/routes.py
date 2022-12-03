@@ -7,7 +7,39 @@ import secrets
 import os
 import json
 import pdfkit
+import stripe
 
+buplishable_key =\
+    'pk_test_51Lve88Jmd0r3Xv99ufojf0bxq0P3NLyX5TgyHO1lpQSkWAaTFoiqnqVyMxpHzS49pVOvkTyTaVozTqg9CzY34iH400QDouRKF6'
+stripe.api_key =\
+    'sk_test_51Lve88Jmd0r3Xv99Q9XvGIXTLmZDNKLM4UNGJwBuKv29HXkRcqj6CVCJk8gKcje5Ds85QOTkPAIyzOkf4BthAfE700FG6E6NrV'
+
+
+@app.route('/payment', methods=['POST'])
+@login_required
+def payment():
+    invoice = request.form.get('invoice')
+    amount = request.form.get('amount')
+    customer = stripe.Customer.create(
+      email=request.form['stripeEmail'],
+      source=request.form['stripeToken'],
+    )
+    charge = stripe.Charge.create(
+      customer=customer.id,
+      description='My electronics',
+      amount=amount,
+      currency='usd',
+    )
+    orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).\
+        order_by(CustomerOrder.id.desc()).first()
+    orders.status = 'Оплачено'
+    db.session.commit()
+    return redirect(url_for('thanks'))
+
+
+@app.route('/thanks')
+def thanks():
+    return render_template('customer/thank.html')
 
 
 @app.route('/customer/register', methods=['GET', 'POST'])
@@ -50,7 +82,7 @@ def get_order():
     if current_user.is_authenticated:
         customer_id = current_user.id
         invoice = secrets.token_hex(5)
-        # updateshoppingcart
+        updateshoppingcart
         try:
             order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders=session['Shoppingcart'])
             db.session.add(order)
@@ -111,3 +143,9 @@ def get_pdf(invoice):
             return response
     return request(url_for('orders'))
 
+def updateshoppingcart():
+    for key, shopping in session['Shoppingcart'].items():
+        session.modified = True
+        del shopping['image']
+        del shopping['colors']
+    return updateshoppingcart
