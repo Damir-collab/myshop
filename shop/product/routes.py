@@ -56,19 +56,14 @@ def get_category(id):
     page = request.args.get('page', 1, type=int)
     get_category = Category.query.filter_by(id=id).first_or_404()
     category = Addproduct.query.filter_by(category=get_category).paginate(page=page, per_page=8)
-    return render_template('products/index.html', title="Home page", category=category, categories=categories(), brands=brands(), get_category=get_category)
+    return render_template('products/index.html', title="Home page", category=category, categories=categories() , brands=brands(), get_category=get_category)
 
 
 @app.route('/addproduct', methods=['GET', 'POST'])
 def addproduct():
-    if 'email' not in session:
-        flash(f'Please login first!', 'danger')
-        return redirect(url_for('login'))
-
     brands = Brand.query.all()
     categories = Category.query.all()
     form = Addproducts(request.form)
-
     if request.method == "POST":
         name = form.name.data
         price = form.price.data
@@ -81,30 +76,27 @@ def addproduct():
         image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
         image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
         image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
-
         addpro = Addproduct(name=name, price=price, discount=discount, stock=stock, color=color,
-                             description=description, category_id=category, brand_id=brand,
-                             image_1=image_1, image_2=image_2, image_3=image_3)
+                            description=description, category_id=category, brand_id=brand,
+                            image_1=image_1, image_2=image_2, image_3=image_3)
         db.session.add(addpro)
-        flash(f'The product {name} was added in database', 'success')
+        flash(f'Товар "{name}" добавлен', 'success')
         db.session.commit()
 
         return redirect(url_for('admin'))
 
-    return render_template('products/addproduct.html', form=form, title="Add product page",
-                           brands=brands(), categories=categories())
+    return render_template('products/addproduct.html', form=form, title="Добавить товар",
+                           brands=brands, categories=categories)
 
 
-@app.route('/updateproduct/<int:id>', methods=['GET','POST'])
+@app.route('/updateproduct/<int:id>', methods=['GET', 'POST'])
 def updateproduct(id):
     brands = Brand.query.all()
     categories = Category.query.all()
     product = Addproduct.query.get_or_404(id)
     form = Addproducts(request.form)
-
     brand = request.form.get('brand')
     category = request.form.get('category')
-
     if request.method == "POST":
         product.name = form.name.data
         product.price = form.price.data
@@ -114,31 +106,43 @@ def updateproduct(id):
         product.stock = form.stock.data
         product.color = form.color.data
         product.description = form.description.data
-
+        db.session.query(Addproduct).filter_by(id=id).\
+            update({'name': product.name,
+                    'price': product.price,
+                    'discount': product.discount,
+                    'brand_id': product.brand_id,
+                    'category_id': product.category_id,
+                    'stock': product.stock,
+                    'color': product.color,
+                    'description': product.description})
         if request.files.get('image_1'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
                 product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
+                db.session.query(Addproduct).filter_by(id=id).update({'image_1': product.image_1})
             except:
                 product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
+                db.session.query(Addproduct).filter_by(id=id).update({'image_1': product.image_1})
         if request.files.get('image_2'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
                 product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
+                db.session.query(Addproduct).filter_by(id=id).update({'image_2': product.image_2})
             except:
                 product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
+                db.session.query(Addproduct).filter_by(id=id).update({'image_2': product.image_2})
         if request.files.get('image_3'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
                 product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
+                db.session.query(Addproduct).filter_by(id=id).update({'image_3': product.image_3})
             except:
                 product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
-
-        flash('The product was updated', 'success')
+                db.session.query(Addproduct).filter_by(id=id).update({'image_3': product.image_3})
+        flash(f'Товар "{product.name}" обновлен', 'success')
         db.session.commit()
 
         return redirect(url_for('admin'))
-
     form.name.data = product.name
     form.price.data = product.price
     form.discount.data = product.discount
@@ -146,8 +150,8 @@ def updateproduct(id):
     form.color.data = product.color
     form.description.data = product.description
 
-    return render_template('products/updateproduct.html', form=form, title='Update Product', product=product,
-                           brands=brands(), categories=categories())
+    return render_template('products/updateproduct.html', form=form, title='Обновить продукт', product=product,
+                           brands=brands, categories=categories)
 
 
 @app.route('/deleteproduct/<int:id>', methods=['POST'])
