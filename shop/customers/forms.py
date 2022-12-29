@@ -21,7 +21,7 @@ class CustomerRegisterForm(FlaskForm):
     submit = SubmitField('Зарегистрироваться')
     def validate_username(self, username):
         if Register.query.filter_by(username=username.data).first():
-            raise ValidationError("Yикнеймом уже существует!")
+            raise ValidationError("Никнеймом уже существует!")
 
     def validate_email(self, email):
         if Register.query.filter_by(email=email.data).first():
