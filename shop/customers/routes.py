@@ -3,43 +3,48 @@ from flask_login import login_required, current_user, logout_user, login_user
 from shop import app, db, photos, search, bcrypt, login_manager
 from shop.customers.forms import CustomerRegisterForm, CustomerLoginForm
 from shop.customers.model import Register, CustomerOrder
+from yookassa import Configuration, Payment
 import secrets
 import os
 import json
 import pdfkit
-import stripe
+import yookassa
+import uuid
 
-buplishable_key =\
-    'pk_test_51Lve88Jmd0r3Xv99ufojf0bxq0P3NLyX5TgyHO1lpQSkWAaTFoiqnqVyMxpHzS49pVOvkTyTaVozTqg9CzY34iH400QDouRKF6'
-stripe.api_key =\
-    'sk_test_51Lve88Jmd0r3Xv99Q9XvGIXTLmZDNKLM4UNGJwBuKv29HXkRcqj6CVCJk8gKcje5Ds85QOTkPAIyzOkf4BthAfE700FG6E6NrV'
-
-
+SHOP_ID = 973076
+PAYMENT_TOKEN = 'test_I8vdgPmSuLG0aAv_nyl5Ki912ISzvIk1bS7BAxW7Mt0'
 @app.route('/payment', methods=['POST'])
 @login_required
-def payment():
+def create_invoice():
+    Configuration.account_id = SHOP_ID
+    Configuration.secret_key = PAYMENT_TOKEN
     invoice = request.form.get('invoice')
     amount = request.form.get('amount')
-    customer = stripe.Customer.create(
-      email=request.form['stripeEmail'],
-      source=request.form['stripeToken'],
-    )
-    charge = stripe.Charge.create(
-      customer=customer.id,
-      description='Mika_shop',
-      amount=amount,
-      currency='usd',
-    )
+
+    payment = Payment.create({
+        "amount": {
+            "value": amount,
+            "currency": "RUB"
+        },
+        "confirmation": {
+            "type": "redirect",
+            "return_url": "https://127.0.0.1:5000/"
+        },
+        "capture": True,
+        "description": "Подробнее",
+        "metadata": {
+            "order_id": "Заказ"
+        }
+    })
+
     orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).\
         order_by(CustomerOrder.id.desc()).first()
     orders.status = 'Оплачено'
     db.session.commit()
-    return redirect(url_for('thanks'))
-
-
-@app.route('/thanks')
-def thanks():
-    return render_template('customer/thank.html')
+    return redirect (payment.confirmation.confirmation_url)
+# @app.route('/thanks')
+# def thanks():
+#     return render_template('customer/thank.html')
 
 
 @app.route('/customer/register', methods=['GET', 'POST'])
